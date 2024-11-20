@@ -2,22 +2,23 @@ CREATE DATABASE Digitalizacion;
 GO
 
 USE Digitalizacion;
+GO
 
 CREATE TABLE modulo(
     idModulo INT PRIMARY KEY IDENTITY(1,1),
-    nombreModulo NVARCHAR(50) NOT NULL,
+    nombreModulo NVARCHAR(50) NOT NULL
 );
 GO
 
 CREATE TABLE permiso(
     idPermiso INT PRIMARY KEY IDENTITY(1,1),
-    nombrePermiso NVARCHAR(50) NOT NULL,
+    nombrePermiso NVARCHAR(50) NOT NULL
 );
 GO
 
 CREATE TABLE rol(
     idRol INT PRIMARY KEY IDENTITY(1,1),
-    nombreRol NVARCHAR(50) NOT NULL,
+    nombreRol NVARCHAR(50) NOT NULL
 );
 GO
 
@@ -28,7 +29,7 @@ CREATE TABLE rolPermisoModulo(
     idModulo INT NOT NULL,
     FOREIGN KEY (idRol) REFERENCES rol(idRol),
     FOREIGN KEY (idPermiso) REFERENCES permiso(idPermiso),
-    FOREIGN KEY (idModulo) REFERENCES modulo(idModulo),
+    FOREIGN KEY (idModulo) REFERENCES modulo(idModulo)
 );
 GO
 
@@ -39,13 +40,13 @@ CREATE TABLE usuario(
     token NVARCHAR(50) NOT NULL,
     refreshToken NVARCHAR(50) NOT NULL,
     idRol INT NOT NULL,
-    FOREIGN KEY (idRol) REFERENCES rol(idRol),
+    FOREIGN KEY (idRol) REFERENCES rol(idRol)
 );
 GO
 
 CREATE TABLE categoria(
     idCategoria INT PRIMARY KEY IDENTITY(1,1),
-    nombreCategoria NVARCHAR(50) NOT NULL,
+    nombreCategoria NVARCHAR(50) NOT NULL
 );
 GO
 
@@ -66,7 +67,7 @@ CREATE TABLE archivo(
     idUsuario INT NOT NULL,
     FOREIGN KEY (idUsuario) REFERENCES usuario(idUsuario),
     FOREIGN KEY (idCategoria) REFERENCES categoria(idCategoria),
-    FOREIGN KEY (idEmpresa) REFERENCES empresa(idEmpresa),
+    FOREIGN KEY (idEmpresa) REFERENCES empresa(idEmpresa)
 );
 GO
 
@@ -77,6 +78,7 @@ CREATE TABLE archivo_version(
     fechaHoraVersion DATETIME NOT NULL,
     numeroVersion INT NOT NULL,
     versionActual BIT NOT NULL,
+    FOREIGN KEY (idArchivo) REFERENCES archivo(idArchivo)
 );
 GO
 
@@ -86,5 +88,5 @@ CREATE TABLE bitacora(
     fechaHora DATETIME NOT NULL,
     usuario NVARCHAR(50) NOT NULL,
     dato NVARCHAR(MAX) NOT NULL,
-    entidad NVARCHAR(50) NOT NULL,
+    entidad NVARCHAR(50) NOT NULL
 );
