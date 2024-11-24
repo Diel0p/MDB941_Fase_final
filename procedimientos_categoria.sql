@@ -14,6 +14,12 @@ CREATE PROCEDURE CrearCategoria
 AS
 BEGIN
     BEGIN TRY
+        -- Validar que el nombre de la categoría no sea NULL o vacío
+        IF @NombreCategoria IS NULL OR LTRIM(RTRIM(@NombreCategoria)) = ''
+        BEGIN
+            THROW 50002, 'El nombre de la categoría no puede ser NULL o vacío.', 1;
+        END
+
         -- Validar que no exista una categoría con el mismo nombre
         IF EXISTS (SELECT 1 FROM categoria WHERE nombreCategoria = @NombreCategoria)
         BEGIN
@@ -51,6 +57,18 @@ CREATE PROCEDURE ActualizarCategoria
 AS
 BEGIN
     BEGIN TRY
+        -- Validar que el ID de la categoría no sea NULL
+        IF @IdCategoria IS NULL
+        BEGIN
+            THROW 50003, 'El ID de la categoría no puede ser NULL.', 1;
+        END
+
+        -- Validar que el nuevo nombre no sea NULL o vacío
+        IF @NuevoNombreCategoria IS NULL OR LTRIM(RTRIM(@NuevoNombreCategoria)) = ''
+        BEGIN
+            THROW 50004, 'El nuevo nombre de la categoría no puede ser NULL o vacío.', 1;
+        END
+
         -- Validar que la categoría exista
         IF NOT EXISTS (SELECT 1 FROM categoria WHERE idCategoria = @IdCategoria)
         BEGIN
