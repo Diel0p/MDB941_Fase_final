@@ -1,5 +1,4 @@
 -- INSERTAR REGISTROS
-
 CREATE PROCEDURE sp_InsertarRol
     @NombreRol NVARCHAR(50)
 AS
