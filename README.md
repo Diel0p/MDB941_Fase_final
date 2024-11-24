@@ -6,14 +6,14 @@ Este repositorio contiene el desarrollo final del proyecto **MDB941**, incluyend
 
 ### 🗂️ Archivos principales
 
-1. **⚙️ desancadenadores_main.sql**
+1. **📁 digitalizacion_v2.sql**
+   - Script que define la estructura y los datos necesarios para el módulo de digitalización.
+
+2. **⚙️ desancadenadores_main.sql**
    - Contiene todos los desencadenadores (triggers) necesarios para gestionar eventos específicos en la base de datos.
 
-2. **📝 Procedimientos_main.sql**
+3. **📝 Procedimientos_main.sql**
    - Incluye todos los procedimientos almacenados principales utilizados en el sistema.
-
-3. **📁 digitalizacion_v2.sql**
-   - Script que define la estructura y los datos necesarios para el módulo de digitalización.
 
 ### 🔍 Scripts por secciones
 Además de los archivos principales, puedes encontrar scripts específicos organizados por funcionalidades o módulos dentro del repositorio. Estos están diseñados para facilitar el acceso y comprensión de cada sección.
