@@ -1,4 +1,6 @@
 -- INSERTAR REGISTROS
+DROP PROCEDURE IF EXISTS sp_InsertarRol;
+GO
 CREATE PROCEDURE sp_InsertarRol
     @NombreRol NVARCHAR(50)
 AS
@@ -17,6 +19,8 @@ BEGIN
 END
 GO
 
+DROP PROCEDURE IF EXISTS sp_InsertarPermiso;
+GO
 CREATE PROCEDURE sp_InsertarPermiso
     @NombrePermiso NVARCHAR(50)
 AS
@@ -35,6 +39,8 @@ BEGIN
 END
 GO
 
+DROP PROCEDURE IF EXISTS sp_InsertarRolPermisoModulo;
+GO
 CREATE PROCEDURE sp_InsertarRolPermisoModulo
     @idRol INT,
     @idPermiso INT,
@@ -59,7 +65,8 @@ GO
 
 
 -- ACTUALIZAR REGISTROS
-
+DROP PROCEDURE IF EXISTS sp_ActualizarRol;
+GO
 CREATE PROCEDURE sp_ActualizarRol
     @idRol INT,
     @NombreRol NVARCHAR(50)
@@ -95,6 +102,8 @@ BEGIN
 END
 GO
 
+DROP PROCEDURE IF EXISTS sp_ActualizarPermiso;
+GO
 CREATE PROCEDURE sp_ActualizarPermiso
     @IdPermiso INT,
     @NombrePermiso NVARCHAR(50)
@@ -130,6 +139,8 @@ BEGIN
 END
 GO
 
+DROP PROCEDURE IF EXISTS sp_ActualizarRolPermisoModulo;
+GO
 CREATE PROCEDURE sp_ActualizarRolPermisoModulo
     @idRolPermisoModulo INT,
     @idRol INT,
@@ -162,7 +173,8 @@ END
 GO
 
 -- ELIMINAR REGISTROS
-
+DROP PROCEDURE IF EXISTS sp_EliminarRol;
+GO
 CREATE PROCEDURE sp_EliminarRol
     @idRol INT
 AS
@@ -193,6 +205,8 @@ BEGIN
 END
 GO
 
+DROP PROCEDURE IF EXISTS sp_EliminarPermiso;
+GO
 CREATE PROCEDURE sp_EliminarPermiso
     @IdPermiso INT
 AS
@@ -220,6 +234,8 @@ BEGIN
 END
 GO
 
+DROP PROCEDURE IF EXISTS sp_EliminarRolPermisoModulo;
+GO
 CREATE PROCEDURE sp_EliminarRolPermisoModulo
     @idRolPermisoModulo INT
 AS
@@ -247,8 +263,8 @@ BEGIN
 END
 GO
 
-
-
+DROP PROCEDURE IF EXISTS sp_ObtenerRolesFiltrados;
+GO
 -- CONSULTAS DE DATOS
 CREATE PROCEDURE sp_ObtenerRolesFiltrados
     @NombreRol NVARCHAR(50) = NULL
@@ -260,6 +276,8 @@ BEGIN
 END
 GO
 
+DROP PROCEDURE IF EXISTS sp_ObtenerPermisosFiltrados;
+GO
 CREATE PROCEDURE sp_ObtenerPermisosFiltrados
     @NombrePermiso NVARCHAR(50) = NULL
 AS
@@ -270,6 +288,8 @@ BEGIN
 END
 GO
 
+DROP PROCEDURE IF EXISTS sp_ObtenerModulosPorRol;
+GO
 CREATE PROCEDURE sp_ObtenerModulosPorRol
     @idRol INT
 AS
@@ -289,6 +309,8 @@ BEGIN
 END
 GO
 
+DROP PROCEDURE IF EXISTS sp_ObtenerPermisosPorRolYModulo;
+GO
 CREATE PROCEDURE sp_ObtenerPermisosPorRolYModulo
     @idRol INT,
     @idModulo INT
