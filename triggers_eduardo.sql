@@ -1,3 +1,6 @@
+
+DROP TRIGGER IF EXISTS tr_RolBitacora;
+GO
 CREATE TRIGGER tr_RolBitacora
 ON rol
 AFTER INSERT, UPDATE, DELETE
@@ -38,6 +41,8 @@ BEGIN
 END;
 GO
 
+DROP TRIGGER IF EXISTS tr_PermisoBitacora;
+GO
 CREATE TRIGGER tr_PermisoBitacora
 ON permiso
 AFTER INSERT, UPDATE, DELETE
@@ -78,6 +83,8 @@ BEGIN
 END;
 GO
 
+DROP TRIGGER IF EXISTS tr_RolPermisoModuloBitacora;
+GO
 CREATE TRIGGER tr_RolPermisoModuloBitacora
 ON rolPermisoModulo
 AFTER INSERT, UPDATE, DELETE
