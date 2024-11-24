@@ -266,9 +266,9 @@ BEGIN
 END;
 GO
 
-
 -- Trigger para usuario
-
+DROP TRIGGER IF EXISTS tr_UsuarioBitacora;
+GO
 CREATE TRIGGER tr_UsuarioBitacora
 ON usuario
 AFTER INSERT, UPDATE, DELETE
@@ -308,7 +308,8 @@ GO
 
 
 -- Trigger para modulo
-
+DROP TRIGGER IF EXISTS tr_ModuloBitacora;
+GO
 CREATE TRIGGER tr_ModuloBitacora
 ON modulo
 AFTER INSERT, UPDATE, DELETE
