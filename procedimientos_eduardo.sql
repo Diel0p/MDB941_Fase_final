@@ -37,22 +37,27 @@ END
 GO
 
 CREATE PROCEDURE sp_InsertarRolPermisoModulo
-    @NombrePermiso NVARCHAR(50)
+    @idRol INT,
+    @idPermiso INT,
+    @idModulo INT
 AS
 BEGIN
-    IF @NombrePermiso IS NULL OR LTRIM(RTRIM(@NombrePermiso)) = ''
+    -- Validar que los parámetros no sean NULL ni vacíos
+    IF @idRol IS NULL OR @idPermiso IS NULL OR @idModulo IS NULL
     BEGIN
-        RAISERROR('El nombre es requerido', 16, 1);
+        RAISERROR('Todos los parámetros son requeridos.', 16, 1);
         RETURN;
     END
 
-    INSERT INTO permiso (nombrePermiso)
-    VALUES (@NombrePermiso);
+    -- Insertar en rolPermisoModulo
+    INSERT INTO rolPermisoModulo (idRol, idPermiso, idModulo)
+    VALUES (@idRol, @idPermiso, @idModulo);
 
-    -- Opcional: Devolver el ID del nuevo usuario
-    SELECT * FROM permiso WHERE idPermiso = SCOPE_IDENTITY();
+    -- Devolver el registro insertado
+    SELECT * FROM rolPermisoModulo WHERE idRolPermisoModulo = SCOPE_IDENTITY();
 END
 GO
+
 
 -- ACTUALIZAR REGISTROS
 
@@ -126,6 +131,37 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE sp_ActualizarRolPermisoModulo
+    @idRolPermisoModulo INT,
+    @idRol INT,
+    @idPermiso INT,
+    @idModulo INT
+AS
+BEGIN
+    -- Validar que los parámetros no sean NULL ni vacíos
+    IF @idRolPermisoModulo IS NULL OR @idRol IS NULL OR @idPermiso IS NULL OR @idModulo IS NULL
+    BEGIN
+        RAISERROR('Todos los parámetros son requeridos.', 16, 1);
+        RETURN;
+    END
+
+    -- Validar que el registro exista
+    IF NOT EXISTS (SELECT 1 FROM rolPermisoModulo WHERE idRolPermisoModulo = @idRolPermisoModulo)
+    BEGIN
+        RAISERROR('El registro no existe.', 16, 1);
+        RETURN;
+    END
+
+    -- Actualizar el registro
+    UPDATE rolPermisoModulo
+    SET idRol = @idRol, idPermiso = @idPermiso, idModulo = @idModulo
+    WHERE idRolPermisoModulo = @idRolPermisoModulo;
+
+    -- Devolver el registro actualizado
+    SELECT * FROM rolPermisoModulo WHERE idRolPermisoModulo = @idRolPermisoModulo;
+END
+GO
+
 -- ELIMINAR REGISTROS
 
 CREATE PROCEDURE sp_EliminarRol
@@ -146,8 +182,11 @@ BEGIN
         RETURN;
     END
 
-    -- Eliminar el rol
+    -- Eliminar el rol y sus permisos
     DELETE FROM rol
+    WHERE idRol = @idRol;
+
+    DELETE FROM rolPermisoModulo
     WHERE idRol = @idRol;
 
     -- Opcional: Devolver mensaje de confirmación
@@ -182,6 +221,35 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE sp_EliminarRolPermisoModulo
+    @idRolPermisoModulo INT
+AS
+BEGIN
+    -- Validar que el ID no sea NULL ni menor que 1
+    IF @idRolPermisoModulo IS NULL OR @idRolPermisoModulo <= 0
+    BEGIN
+        RAISERROR('El ID del registro es requerido y debe ser mayor que 0.', 16, 1);
+        RETURN;
+    END
+
+    -- Validar que el registro exista
+    IF NOT EXISTS (SELECT 1 FROM rolPermisoModulo WHERE idRolPermisoModulo = @idRolPermisoModulo)
+    BEGIN
+        RAISERROR('El registro no existe.', 16, 1);
+        RETURN;
+    END
+
+    -- Eliminar el registro
+    DELETE FROM rolPermisoModulo
+    WHERE idRolPermisoModulo = @idRolPermisoModulo;
+
+    -- Devolver mensaje de confirmación
+    SELECT 'Registro eliminado exitosamente' AS Mensaje;
+END
+GO
+
+
+
 -- CONSULTAS DE DATOS
 CREATE PROCEDURE sp_ObtenerRolesFiltrados
     @NombreRol NVARCHAR(50) = NULL
@@ -202,4 +270,45 @@ BEGIN
     WHERE (@NombrePermiso IS NULL OR nombrePermiso LIKE '%' + @NombrePermiso + '%');
 END
 GO
+
+CREATE PROCEDURE sp_ObtenerModulosPorRol
+    @idRol INT
+AS
+BEGIN
+    -- Validar que el ID del rol no sea NULL ni menor que 1
+    IF @idRol IS NULL OR @idRol <= 0
+    BEGIN
+        RAISERROR('El ID del rol es requerido y debe ser mayor que 0.', 16, 1);
+        RETURN;
+    END
+
+    -- Consultar los módulos para el rol especificado
+    SELECT DISTINCT m.idModulo, m.nombreModulo
+    FROM rolPermisoModulo rpm
+    JOIN modulo m ON rpm.idModulo = m.idModulo
+    WHERE rpm.idRol = @idRol;
+END
+GO
+
+CREATE PROCEDURE sp_ObtenerPermisosPorRolYModulo
+    @idRol INT,
+    @idModulo INT
+AS
+BEGIN
+    -- Validar que los ID no sean NULL ni menores que 1
+    IF @idRol IS NULL OR @idRol <= 0 OR @idModulo IS NULL OR @idModulo <= 0
+    BEGIN
+        RAISERROR('El ID del rol y el ID del módulo son requeridos y deben ser mayores que 0.', 16, 1);
+        RETURN;
+    END
+
+    -- Consultar los permisos para el rol y módulo especificados
+    SELECT p.idPermiso, p.nombrePermiso
+    FROM rolPermisoModulo rpm
+    JOIN permiso p ON rpm.idPermiso = p.idPermiso
+    WHERE rpm.idRol = @idRol AND rpm.idModulo = @idModulo;
+END
+GO
+
+
 
