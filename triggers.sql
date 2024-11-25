@@ -183,8 +183,6 @@ BEGIN
     -- Insertar en la bitácora la información del registro eliminado
     INSERT INTO bitacora (accion, fechaHora, usuario, dato, entidad)
     SELECT
-
-
         'DELETE', -- Acción realizada
         GETDATE(), -- Fecha y hora de la transacción
         SYSTEM_USER, -- Usuario que realizó la transacción
