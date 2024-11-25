@@ -22,6 +22,13 @@ EXEC sp_ObtenerPermisosPorRolYModulo @idRol = 1, @idModulo = NULL; -- Caso invá
 -- Ejemplos para LeerEmpresas
 EXEC LeerEmpresas; -- Obtener todas las empresas
 
+-- Ejemplo obtener informacion empresa
+EXEC ObtenerInformacionDeEmpresa @IdEmpresa = 2; --Obtener informacion por ID
+EXEC ObtenerInformacionDeEmpresa @NombreEmpresa = 'Consultora Digital'; -- Obtener informacion por nombre de la empresa
+EXEC ObtenerInformacionDeEmpresa; --Obtener toda la informacion sin filtros
+
 -- Ejemplo obtener archivos y empresas asociadas a una categoría por su nombre
 EXEC ObtenerArchivosYEmpresasPorCategoria @NombreCategoria = 'Contratos';
 EXEC ObtenerArchivosYEmpresasPorCategoria @IdCategoria = 2; -- obtener por ID 
+EXEC ObtenerArchivosYEmpresasPorCategoria; --Obtener toda la informacion sin filtros
+

@@ -847,7 +847,6 @@ BEGIN
 END;
 GO
 
- -- ObtenerArchivosYEmpresasPorCategoria
 DROP PROCEDURE IF EXISTS ObtenerArchivosYEmpresasPorCategoria;
 GO
 
@@ -870,15 +869,55 @@ BEGIN
             e.nombreEmpresa,
             u.usuario AS SubidoPor
         FROM archivo a
-        INNER JOIN categoria c ON a.idCategoria = c.idCategoria
-        INNER JOIN empresa e ON a.idEmpresa = e.idEmpresa
-        INNER JOIN usuario u ON a.idUsuario = u.idUsuario
+        LEFT JOIN categoria c ON a.idCategoria = c.idCategoria
+        LEFT JOIN empresa e ON a.idEmpresa = e.idEmpresa
+        LEFT JOIN usuario u ON a.idUsuario = u.idUsuario
         WHERE 
             (@IdCategoria IS NOT NULL AND c.idCategoria = @IdCategoria) OR
-            (@NombreCategoria IS NOT NULL AND c.nombreCategoria LIKE '%' + @NombreCategoria + '%');
+            (@NombreCategoria IS NOT NULL AND c.nombreCategoria LIKE '%' + @NombreCategoria + '%') OR
+            (@IdCategoria IS NULL AND @NombreCategoria IS NULL); -- Traer todo si no hay filtros
     END TRY
     BEGIN CATCH
         -- Capturar errores
+        PRINT ERROR_MESSAGE();
+    END CATCH
+END;
+GO
+
+--Obtener informacion empresa
+DROP PROCEDURE IF EXISTS ObtenerInformacionDeEmpresa;
+GO
+
+CREATE PROCEDURE ObtenerInformacionDeEmpresa
+    @IdEmpresa INT = NULL,            -- Filtro opcional por ID de la empresa
+    @NombreEmpresa NVARCHAR(50) = NULL -- Filtro opcional por nombre de la empresa
+AS
+BEGIN
+    BEGIN TRY
+        -- Consultar la información valiosa de las empresas
+        SELECT 
+            e.idEmpresa,
+            e.nombreEmpresa,
+            a.idArchivo,
+            a.nombreArchivo,
+            a.ruta,
+            a.tamano,
+            a.tipo,
+            c.idCategoria,
+            c.nombreCategoria,
+            u.idUsuario,
+            u.usuario AS SubidoPor
+        FROM empresa e
+        LEFT JOIN archivo a ON e.idEmpresa = a.idEmpresa
+        LEFT JOIN categoria c ON a.idCategoria = c.idCategoria
+        LEFT JOIN usuario u ON a.idUsuario = u.idUsuario
+        WHERE 
+            (@IdEmpresa IS NOT NULL AND e.idEmpresa = @IdEmpresa) OR
+            (@NombreEmpresa IS NOT NULL AND e.nombreEmpresa LIKE '%' + @NombreEmpresa + '%') OR
+            (@IdEmpresa IS NULL AND @NombreEmpresa IS NULL); -- Mostrar todo si no se pasan filtros
+    END TRY
+    BEGIN CATCH
+        -- Manejo de errores
         PRINT ERROR_MESSAGE();
     END CATCH
 END;
