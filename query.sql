@@ -32,3 +32,5 @@ EXEC ObtenerArchivosYEmpresasPorCategoria @NombreCategoria = 'Contratos';
 EXEC ObtenerArchivosYEmpresasPorCategoria @IdCategoria = 2; -- obtener por ID 
 EXEC ObtenerArchivosYEmpresasPorCategoria; --Obtener toda la informacion sin filtros
 
+-- Ejemplo obtener un informe detallado de todos los usuarios junto con sus roles
+EXEC ObtenerUsuariosConRoles; -- el procedimiento proporciona un informe detallado de todos los usuarios junto con el rol que se les ha asignado.
