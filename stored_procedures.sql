@@ -846,3 +846,40 @@ BEGIN
     WHERE nombreEmpresa IS NOT NULL; -- Puedes personalizar filtros si es necesario
 END;
 GO
+
+ -- ObtenerArchivosYEmpresasPorCategoria
+DROP PROCEDURE IF EXISTS ObtenerArchivosYEmpresasPorCategoria;
+GO
+
+CREATE PROCEDURE ObtenerArchivosYEmpresasPorCategoria
+    @NombreCategoria NVARCHAR(50) = NULL, -- Parámetro opcional para filtrar por nombre de categoría
+    @IdCategoria INT = NULL               -- Parámetro opcional para filtrar por ID de categoría
+AS
+BEGIN
+    BEGIN TRY
+        -- Consultar archivos y empresas asociadas a una categoría
+        SELECT 
+            a.idArchivo,
+            a.nombreArchivo,
+            a.ruta,
+            a.tamano,
+            a.tipo,
+            c.idCategoria,
+            c.nombreCategoria,
+            e.idEmpresa,
+            e.nombreEmpresa,
+            u.usuario AS SubidoPor
+        FROM archivo a
+        INNER JOIN categoria c ON a.idCategoria = c.idCategoria
+        INNER JOIN empresa e ON a.idEmpresa = e.idEmpresa
+        INNER JOIN usuario u ON a.idUsuario = u.idUsuario
+        WHERE 
+            (@IdCategoria IS NOT NULL AND c.idCategoria = @IdCategoria) OR
+            (@NombreCategoria IS NOT NULL AND c.nombreCategoria LIKE '%' + @NombreCategoria + '%');
+    END TRY
+    BEGIN CATCH
+        -- Capturar errores
+        PRINT ERROR_MESSAGE();
+    END CATCH
+END;
+GO
