@@ -1,18 +1,13 @@
-<<<<<<< Updated upstream
-=======
-DROP TRIGGER IF EXISTS tr_Archivo
+DROP TRIGGER IF EXISTS tr_ArchivoVersionLog;
 GO
-
->>>>>>> Stashed changes
-CREATE TRIGGER tr_Archivo
-ON archivo
+CREATE TRIGGER tr_ArchivoVersionLog
+ON archivo_version
 AFTER INSERT, UPDATE, DELETE
 AS
 BEGIN
-    -- Declaración de variables
     DECLARE @Accion NVARCHAR(50);
     DECLARE @Datos NVARCHAR(MAX);
-    DECLARE @Entidad NVARCHAR(50) = 'Archivo';
+    DECLARE @Entidad NVARCHAR(50) = 'ArchivoVersion';
 
     -- Determinar la acción
     IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
@@ -25,43 +20,36 @@ BEGIN
     -- Manejar los datos según la acción
     IF @Accion = 'INSERT'
     BEGIN
-        SELECT @Datos = (SELECT idArchivo, nombreArchivo, ruta, tamano, tipo, idCategoria, idEmpresa, idUsuario
+        SELECT @Datos = (SELECT idArchivoVersion, idArchivo, rutaTemp, fechaHoraVersion, numeroVersion, versionActual
                          FROM inserted FOR JSON PATH);
     END
     ELSE IF @Accion = 'DELETE'
     BEGIN
-        SELECT @Datos = (SELECT idArchivo, nombreArchivo, ruta, tamano, tipo, idCategoria, idEmpresa, idUsuario
+        SELECT @Datos = (SELECT idArchivoVersion, idArchivo, rutaTemp, fechaHoraVersion, numeroVersion, versionActual
                          FROM deleted FOR JSON PATH);
     END
     ELSE IF @Accion = 'UPDATE'
     BEGIN
         SELECT @Datos = 
-            (SELECT 'Antigua' AS Tipo, idArchivo, nombreArchivo, ruta, tamano, tipo, idCategoria, idEmpresa, idUsuario
+            (SELECT 'Antigua' AS Tipo, idArchivoVersion, idArchivo, rutaTemp, fechaHoraVersion, numeroVersion, versionActual
              FROM deleted FOR JSON PATH) +
             ',' +
-            (SELECT 'Nueva' AS Tipo, idArchivo, nombreArchivo, ruta, tamano, tipo, idCategoria, idEmpresa, idUsuario
+            (SELECT 'Nueva' AS Tipo, idArchivoVersion, idArchivo, rutaTemp, fechaHoraVersion, numeroVersion, versionActual
              FROM inserted FOR JSON PATH);
     END
 
-<<<<<<< Updated upstream
-    -- Insertar en la tabla archivo_log
-    INSERT INTO archivo_log (accion, fechaHora, usuario, dato, entidad)
+    -- Insertar en la tabla
+    INSERT INTO bitacora (accion, fechaHora, usuario, dato, entidad)
     VALUES (@Accion, GETDATE(), SYSTEM_USER, @Datos, @Entidad);
 END;
 GO
-=======
-    -- Insertar en la tabla archivo_version
-    INSERT INTO bitacora(accion, fechaHora, usuario, dato, entidad)
-    VALUES (@Accion, GETDATE(), SYSTEM_USER, @Datos, @Entidad);
-END
-GO
 
--- Eliminar el procedimiento existente, si ya existe
-DROP PROCEDURE IF EXISTS sp_InsertarArchivo;
+
+DROP PROCEDURE IF EXISTS sp_archivo_version;
 GO
 
 -- Crear el procedimiento con solo dos parámetros
-CREATE PROCEDURE sp_InsertarArchivo
+CREATE PROCEDURE sp_InsertarArchivo_version
     @NombreArchivo NVARCHAR(MAX),
     @Ruta NVARCHAR(MAX),
     @Tamano INT,
@@ -116,14 +104,14 @@ BEGIN
     VALUES (@NombreArchivo, @Ruta, @Tamano, @Tipo, @IdCategoria, @IdEmpresa, @IdUsuario);
 
     -- Retornar los datos del archivo insertado
-    SELECT * FROM archivo WHERE idArchivo = SCOPE_IDENTITY();
+    SELECT * FROM archivo_version WHERE idArchivoVersion = SCOPE_IDENTITY();
 END;
 GO
 
 
-CREATE PROCEDURE sp_ActualizarArchivo
+CREATE PROCEDURE sp_archivo_version
     @NombreArchivo NVARCHAR(MAX),
-	@idArchivo INT,
+	@idArchivoVersion INT,
     @Ruta NVARCHAR(MAX),
     @Tamano INT,
     @Tipo NVARCHAR(50),
@@ -132,7 +120,7 @@ CREATE PROCEDURE sp_ActualizarArchivo
     @IdUsuario INT
 AS
 BEGIN
-	IF @idArchivo IS NULL OR @idArchivo <= 0
+	IF @idArchivoVersion IS NULL OR @idArchivoVersion <= 0
 	BEGIN
 		RAISERROR('EL id del archivo es requerido y debe ser mayor que 0', 16,1);
 		RETURN;
@@ -144,21 +132,21 @@ BEGIN
 		RETURN;
 	END
 
-	IF NOT EXISTS (SELECT 1 FROM archivo WHERE idArchivo = @idArchivo)
+	IF NOT EXISTS (SELECT 1 FROM archivo_version WHERE idArchivoVersion = @idArchivoVersion)
 	BEGIN
 		RAISERROR('El archivo no existe.', 16, 1)
 		RETURN;
 	END
 
-	UPDATE archivo SET nombreArchivo = @NombreArchivo WHERE idArchivo = @idArchivo;
+	UPDATE archivo_version SET nombreArchivo = @NombreArchivo WHERE idArchivoVersion = @idArchivoVersion;
 
-	SELECT * FROM archivo WHERE idArchivo = @idArchivo;
+	SELECT * FROM archivo_version WHERE idArchivoVersion = @idArchivoVersion;
 END
 GO
 
-EXEC sp_ActualizarArchivo
+EXEC sp_archivo_version
     @NombreArchivo = 'Test',
-	@idArchivo = 1,
+	@idArchivoVersion = 1,
     @Ruta = '/ruta/archivo.txt',
     @Tamano = 1024,
     @Tipo = 'txt',
@@ -189,9 +177,3 @@ BEGIN
 
 	DELETE FROM archivo WHERE idArchivo = @idArchivo;
 END
-
-EXEC sp_EliminarArchivo
-	@idArchivo = 6;
-
-SELECT*FROM bitacora
->>>>>>> Stashed changes
