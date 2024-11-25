@@ -922,3 +922,31 @@ BEGIN
     END CATCH
 END;
 GO
+
+    
+CREATE PROCEDURE ObtenerUsuariosConRoles
+AS
+BEGIN
+    BEGIN TRY
+        -- Seleccionar la información de usuarios y sus roles
+        SELECT 
+            u.idUsuario,
+            u.usuario AS NombreUsuario,
+            u.email AS Email,
+            r.nombreRol AS Rol
+        FROM 
+            usuario u
+        INNER JOIN 
+            rol r ON u.idRol = r.idRol
+        ORDER BY 
+            u.usuario;
+
+        PRINT 'Informe de usuarios y roles generado exitosamente.';
+    END TRY
+    BEGIN CATCH
+        -- Capturar y mostrar errores
+        PRINT ERROR_MESSAGE();
+    END CATCH
+END;
+GO
+
